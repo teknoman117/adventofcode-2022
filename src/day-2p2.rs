@@ -82,8 +82,8 @@ struct Game {
 }
 
 impl Game {
-    pub fn score(&self) -> u32 {
-        let shape = match self.them {
+    pub fn get_move(&self) -> Move {
+        match self.them {
             Move::Rock => match self.outcome {
                 Outcome::Lose => Move::Scissors,
                 Outcome::Draw => Move::Rock,
@@ -99,9 +99,11 @@ impl Game {
                 Outcome::Draw => Move::Scissors,
                 Outcome::Win => Move::Rock,
             },
-        };
+        }
+    }
 
-        shape.value() + self.outcome.value()
+    pub fn score(&self) -> u32 {
+        self.get_move().value() + self.outcome.value()
     }
 }
 
