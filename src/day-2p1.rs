@@ -101,10 +101,7 @@ fn main() {
     let contents = fs::read_to_string(file_path).unwrap();
     let score: u32 = contents
         .split("\n")
-        .filter_map(|game_str| match game_str.parse::<Game>() {
-            Ok(game) => Some(game),
-            Err(_) => None,
-        })
+        .flat_map(|game_str| game_str.parse::<Game>())
         .map(|game| game.score())
         .sum();
     println!("score: {}", score);
