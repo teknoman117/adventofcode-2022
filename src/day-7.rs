@@ -1,6 +1,5 @@
 // solution to https://adventofcode.com/2022/day/7
 
-use std::collections::hash_map;
 use std::collections::HashMap;
 use std::env;
 use std::fs;
@@ -17,14 +16,6 @@ struct DirEntry {
 }
 
 impl DirEntry {
-    fn new() -> DirEntry {
-        DirEntry {
-            name: "".to_string(),
-            subdirs: HashMap::new(),
-            files: HashMap::new(),
-        }
-    }
-
     fn named(name: String) -> DirEntry {
         DirEntry {
             name: name,
@@ -70,6 +61,7 @@ impl<'a> DirEntryIter<'a> {
     }
 }
 
+// TODO: try to rework this into something a bit more sane
 impl<'a> Iterator for DirEntryIter<'a> {
     type Item = &'a DirEntry;
 
@@ -194,5 +186,28 @@ fn main() {
     println!(
         "total size of directories of no more than 100,000 in size: {}",
         size
+    );
+
+    // total size of the filesystem
+    let disk_size = 70000000usize;
+    let usage = root.recursive_size();
+    let available = disk_size - usage;
+    println!(
+        "total size of filesystem: {} (available: {})",
+        usage, available
+    );
+
+    // find the smallest directory we can delete that makes enough available space
+    let update = 30000000usize;
+    let requirement = update.checked_sub(available).unwrap_or(0);
+    let smallest = root
+        .iter()
+        .map(|dir| dir.recursive_size())
+        .filter(|size| *size >= requirement)
+        .min()
+        .unwrap();
+    println!(
+        "smallest directory we can delete: {} (to free: {})",
+        smallest, requirement
     );
 }
