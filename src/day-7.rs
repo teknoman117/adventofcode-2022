@@ -1,6 +1,7 @@
 // solution to https://adventofcode.com/2022/day/7
 
 use std::collections::HashMap;
+use std::collections::VecDeque;
 use std::env;
 use std::fs;
 
@@ -49,7 +50,7 @@ impl DirEntry {
 
 struct DirEntryIter<'a> {
     top: &'a DirEntry,
-    current: Option<Vec<DirEntryIter<'a>>>,
+    current: Option<VecDeque<DirEntryIter<'a>>>,
 }
 
 impl<'a> DirEntryIter<'a> {
@@ -68,11 +69,11 @@ impl<'a> Iterator for DirEntryIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         match &mut self.current {
             Some(child) => {
-                if let Some(s) = child.last_mut() {
+                if let Some(s) = child.front_mut(){
                     if let Some(t) = s.next() {
                         Some(t)
                     } else {
-                        child.pop();
+                        child.pop_front();
                         self.next()
                     }
                 } else {
